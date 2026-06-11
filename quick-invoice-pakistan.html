@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0f172a"/>
+<title>Quick Invoice Pakistan — Smart Billing Solution</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #263248;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #6366f1;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --glass: rgba(30,41,59,0.8);
+    --shadow: 0 25px 50px rgba(0,0,0,0.4);
+    --radius: 16px;
+    --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+  .light {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: rgba(0,0,0,0.07);
+    --accent: #2563eb;
+    --accent2: #4f46e5;
+    --text: #0f172a;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --glass: rgba(255,255,255,0.85);
+    --shadow: 0 25px 50px rgba(0,0,0,0.08);
+  }
+  .pakistan {
+    --accent: #0f9d58;
+    --accent2: #0a7a45;
+    --surface: #0d1f17;
+    --surface2: #122b1f;
+    --bg: #091510;
+    --border: rgba(15,157,88,0.15);
+  }
+  .pakistan.light {
+    --bg: #f0faf4;
+    --surface: #ffffff;
+    --surface2: #e8f5ee;
+    --accent: #0f9d58;
+    --accent2: #0a7a45;
+    --text: #0a2014;
+    --text2: #1a6040;
+    --border: rgba(15,157,88,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body, #root { height: 100%; font-family: 'Inter', sans-serif; }
+  body { background: var(--bg); color: var(--text); transition: var(--transition); overflow-x: hidden; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 99px; }
+
+  /* Loading Screen */
+  .loading-screen {
+    position: fixed; inset: 0; background: #0f172a; z-index: 9999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.6s ease;
+  }
+  .loading-screen.fade-out { opacity: 0; pointer-events: none; }
+  .loading-logo { font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg,#3b82f6,#6366f1,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; animation: pulse 2s infinite; }
+  .loading-tagline { color: #64748b; font-size: 0.9rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 40px; }
+  .loading-bar { width: 240px; height: 3px; background: #1e293b; border-radius: 99px; overflow: hidden; }
+  .loading-bar-fill { height: 100%; background: linear-gradient(90deg,#3b82f6,#6366f1); border-radius: 99px; animation: loading 2s ease forwards; }
+  .pk-badge { margin-top: 40px; display: flex; align-items: center; gap: 8px; color: #0f9d58; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; }
+  .pk-flag { width: 20px; height: 14px; background: #01411C; border-radius: 2px; position: relative; overflow: hidden; }
+  .pk-flag::before { content: ''; position: absolute; right: 0; top: 0; width: 75%; height: 100%; background: #01411C; }
+  .pk-flag::after { content: '☪'; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 8px; color: white; }
+  @keyframes loading { 0% { width: 0 } 100% { width: 100% } }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.7 } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-20px) } to { opacity: 1; transform: translateX(0) } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.95) } to { opacity: 1; transform: scale(1) } }
+  @keyframes countUp { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes shimmer { 0% { background-position: -200% center } 100% { background-position: 200% center } }
+  @keyframes spin { to { transform: rotate(360deg) } }
+  @keyframes toast-in { from { opacity: 0; transform: translateX(120%) } to { opacity: 1; transform: translateX(0) } }
+  @keyframes toast-out { from { opacity: 1 } to { opacity: 0; transform: translateX(120%) } }
+  @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+  @keyframes glow { 0%,100% { box-shadow: 0 0 20px rgba(59,130,246,0.3) } 50% { box-shadow: 0 0 40px rgba(59,130,246,0.6) } }
+
+  /* Layout */
+  .app-layout { display: flex; height: 100vh; overflow: hidden; }
+  .sidebar {
+    width: 260px; min-width: 260px; height: 100vh; background: var(--surface);
+    border-right: 1px solid var(--border); display: flex; flex-direction: column;
+    transition: var(--transition); z-index: 100; overflow-y: auto; overflow-x: hidden;
+  }
+  .sidebar.collapsed { width: 72px; min-width: 72px; }
+  .main-content { flex: 1; overflow-y: auto; overflow-x: hidden; background: var(--bg); }
+
+  /* Sidebar Header */
+  .sidebar-header { padding: 20px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .brand-icon {
+    width: 40px; height: 40px; min-width: 40px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.1rem; color: white; animation: glow 3s ease infinite;
+  }
+  .brand-text { overflow: hidden; }
+  .brand-name { font-size: 0.85rem; font-weight: 800; color: var(--text); white-space: nowrap; }
+  .brand-sub { font-size: 0.65rem; color: var(--text3); white-space: nowrap; }
+
+  /* Nav */
+  .nav-section { padding: 8px; }
+  .nav-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text3); padding: 8px 12px 4px; font-weight: 700; overflow: hidden; white-space: nowrap; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px;
+    cursor: pointer; transition: var(--transition); color: var(--text2); font-size: 0.875rem;
+    font-weight: 500; margin-bottom: 2px; text-decoration: none; position: relative;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.1)); color: var(--accent); }
+  .nav-item.active .nav-icon { color: var(--accent); }
+  .nav-icon { width: 20px; min-width: 20px; display: flex; align-items: center; justify-content: center; }
+  .nav-badge { margin-left: auto; background: var(--accent); color: white; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+  .nav-text { white-space: nowrap; overflow: hidden; transition: var(--transition); }
+
+  /* Page Content */
+  .page { padding: 28px; animation: fadeIn 0.35s ease; max-width: 1400px; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .page-title { font-size: 1.6rem; font-weight: 800; }
+  .page-sub { font-size: 0.875rem; color: var(--text2); margin-top: 3px; }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px; transition: var(--transition);
+  }
+  .card:hover { border-color: rgba(59,130,246,0.25); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+  .card-glass { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+
+  /* Stats Cards */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px; position: relative; overflow: hidden; transition: var(--transition);
+    animation: scaleIn 0.4s ease both;
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px;
+    border-radius: 50%; opacity: 0.08; transform: translate(20px, -20px);
+  }
+  .stat-card.blue::before { background: #3b82f6; }
+  .stat-card.green::before { background: #10b981; }
+  .stat-card.yellow::before { background: #f59e0b; }
+  .stat-card.red::before { background: #ef4444; }
+  .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
+  .stat-value { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+  .stat-label { font-size: 0.8rem; color: var(--text2); }
+  .stat-change { font-size: 0.75rem; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+  .stat-change.up { color: var(--success); }
+  .stat-change.down { color: var(--danger); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;
+    border-radius: 10px; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+    transition: var(--transition); border: none; font-family: inherit;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(59,130,246,0.35); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--surface); border-color: var(--accent); }
+  .btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+  .btn-danger:hover { background: var(--danger); color: white; }
+  .btn-success { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
+  .btn-success:hover { background: var(--success); color: white; }
+  .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
+  .btn-icon { padding: 8px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+  .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Forms */
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; padding: 10px 14px; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 10px; color: var(--text); font-size: 0.875rem; font-family: inherit;
+    transition: var(--transition); outline: none;
+  }
+  .form-input:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+  .form-input::placeholder { color: var(--text3); }
+  .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  textarea.form-input { resize: vertical; min-height: 80px; }
+
+  /* Invoice Items Table */
+  .invoice-table { width: 100%; border-collapse: collapse; }
+  .invoice-table th { padding: 10px 12px; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); background: var(--surface2); }
+  .invoice-table th:first-child { border-radius: 8px 0 0 8px; }
+  .invoice-table th:last-child { border-radius: 0 8px 8px 0; }
+  .invoice-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .invoice-table tr:last-child td { border-bottom: none; }
+
+  /* Status Badges */
+  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
+  .badge-paid { background: rgba(16,185,129,0.15); color: #10b981; }
+  .badge-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+  .badge-overdue { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; padding: 16px 28px;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+    position: sticky; top: 0; z-index: 50; backdrop-filter: blur(20px);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .search-box { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 14px; min-width: 220px; }
+  .search-box input { background: none; border: none; outline: none; color: var(--text); font-size: 0.85rem; width: 100%; font-family: inherit; }
+  .search-box input::placeholder { color: var(--text3); }
+  .theme-toggle { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; padding: 4px; }
+  .theme-btn { padding: 5px 10px; border-radius: 99px; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: var(--transition); border: none; background: none; color: var(--text2); }
+  .theme-btn.active { background: var(--accent); color: white; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; color: white; cursor: pointer; }
+
+  /* Invoice Preview */
+  .invoice-preview-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .invoice-preview { background: white; color: #111; padding: 48px; min-height: 800px; font-size: 0.85rem; }
+  .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+  .inv-logo { width: 80px; height: 80px; background: linear-gradient(135deg,#3b82f6,#6366f1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1.1rem; }
+  .inv-title-block { text-align: right; }
+  .inv-title { font-size: 2.5rem; font-weight: 900; color: #0f172a; letter-spacing: -0.02em; }
+  .inv-num { color: #3b82f6; font-size: 0.9rem; font-weight: 700; margin-top: 4px; }
+  .inv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 32px; }
+  .inv-party-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; margin-bottom: 8px; font-weight: 700; }
+  .inv-party-name { font-weight: 800; font-size: 1rem; color: #0f172a; margin-bottom: 4px; }
+  .inv-party-info { color: #475569; line-height: 1.6; font-size: 0.82rem; }
+  .inv-meta { display: flex; gap: 24px; background: #f8fafc; border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; }
+  .inv-meta-item label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px; }
+  .inv-meta-item span { font-weight: 700; color: #0f172a; font-size: 0.9rem; }
+  .inv-items-table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+  .inv-items-table th { background: #0f172a; color: white; padding: 10px 14px; text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .inv-items-table th:first-child { border-radius: 8px 0 0 8px; }
+  .inv-items-table th:last-child { border-radius: 0 8px 8px 0; text-align: right; }
+  .inv-items-table td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  .inv-items-table td:last-child { text-align: right; font-weight: 600; }
+  .inv-totals { float: right; width: 280px; }
+  .inv-total-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.875rem; color: #475569; }
+  .inv-total-row.grand { border-top: 2px solid #0f172a; margin-top: 8px; padding-top: 12px; font-weight: 800; font-size: 1rem; color: #0f172a; }
+  .inv-grand-highlight { background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 10px; padding: 14px 18px; margin-top: 4px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; }
+  .inv-footer { margin-top: 48px; border-top: 1px solid #e2e8f0; padding-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .inv-notes { font-size: 0.8rem; color: #475569; max-width: 60%; }
+  .inv-watermark { font-size: 0.7rem; color: #cbd5e1; font-style: italic; text-align: right; }
+  .inv-brand { font-size: 0.72rem; color: #94a3b8; }
+  .inv-status-stamp {
+    position: absolute; right: 60px; top: 120px; transform: rotate(-20deg);
+    border: 3px solid; border-radius: 8px; padding: 6px 14px;
+    font-weight: 900; font-size: 1.2rem; letter-spacing: 0.1em; opacity: 0.15;
+    text-transform: uppercase; pointer-events: none;
+  }
+  .inv-status-stamp.paid { color: #10b981; border-color: #10b981; }
+  .inv-status-stamp.pending { color: #f59e0b; border-color: #f59e0b; }
+  .inv-status-stamp.overdue { color: #ef4444; border-color: #ef4444; }
+
+  /* Invoice List */
+  .invoice-row { display: grid; grid-template-columns: 120px 1fr 140px 120px 120px 100px; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 8px; background: var(--surface); transition: var(--transition); cursor: pointer; }
+  .invoice-row:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .invoice-num { font-weight: 700; font-size: 0.875rem; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  .invoice-client { font-weight: 600; font-size: 0.875rem; }
+  .invoice-client-sub { font-size: 0.75rem; color: var(--text2); }
+  .invoice-amount { font-weight: 700; font-size: 0.95rem; }
+  .invoice-date { font-size: 0.8rem; color: var(--text2); }
+
+  /* Toast */
+  .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px;
+    background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow);
+    font-size: 0.875rem; font-weight: 500; min-width: 260px; animation: toast-in 0.35s ease;
+    backdrop-filter: blur(20px);
+  }
+  .toast.out { animation: toast-out 0.3s ease forwards; }
+  .toast-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+  .toast.success .toast-icon { background: rgba(16,185,129,0.15); }
+  .toast.error .toast-icon { background: rgba(239,68,68,0.15); }
+  .toast.info .toast-icon { background: rgba(59,130,246,0.15); }
+  .toast.warning .toast-icon { background: rgba(245,158,11,0.15); }
+
+  /* Logo upload */
+  .logo-upload { border: 2px dashed var(--border); border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+  .logo-upload:hover { border-color: var(--accent); background: rgba(59,130,246,0.04); }
+  .logo-upload.dragging { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+  .logo-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  /* Grid layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .grid-layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px; width: 100%; max-width: 560px; animation: scaleIn 0.25s ease; max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .modal-title { font-size: 1.1rem; font-weight: 700; }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 64px 20px; color: var(--text2); }
+  .empty-icon { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5; }
+  .empty-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+
+  /* Charts */
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 80px; }
+  .bar-item { flex: 1; border-radius: 6px 6px 0 0; transition: var(--transition); cursor: pointer; position: relative; }
+  .bar-item:hover { opacity: 0.8; }
+
+  /* Client card */
+  .client-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: var(--transition); }
+  .client-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .client-avatar { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: white; margin-bottom: 12px; }
+  .client-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .client-info { font-size: 0.8rem; color: var(--text2); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+
+  /* Settings */
+  .settings-section { margin-bottom: 32px; }
+  .settings-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-label { font-size: 0.875rem; font-weight: 600; }
+  .settings-sub { font-size: 0.8rem; color: var(--text2); margin-top: 2px; }
+  .toggle-switch { width: 44px; height: 24px; background: var(--surface2); border-radius: 99px; position: relative; cursor: pointer; transition: var(--transition); border: 2px solid var(--border); flex-shrink: 0; }
+  .toggle-switch.on { background: var(--accent); border-color: var(--accent); }
+  .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: var(--transition); }
+  .toggle-switch.on::after { transform: translateX(20px); }
+
+  /* Payment methods */
+  .payment-method { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer; transition: var(--transition); }
+  .payment-method.selected { border-color: var(--accent); background: rgba(59,130,246,0.06); }
+  .payment-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .grid-layout { grid-template-columns: 1fr; }
+    .invoice-row { grid-template-columns: 100px 1fr 110px 90px; }
+    .invoice-row .invoice-date, .invoice-row .invoice-actions { display: none; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { position: fixed; left: -260px; }
+    .sidebar.mobile-open { left: 0; }
+    .page { padding: 16px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .topbar { padding: 12px 16px; }
+    .search-box { display: none; }
+    .invoice-row { grid-template-columns: 90px 1fr 100px; }
+    .invoice-row .invoice-amount-col { display: block; }
+    .topbar .topbar-left .page-title { font-size: 1.1rem; }
+  }
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 1.3rem; }
+  }
+
+  /* Sidebar mobile overlay */
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+  .sidebar-overlay.show { display: block; }
+
+  /* Gradient text */
+  .gradient-text { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  /* Section tabs */
+  .tabs { display: flex; gap: 4px; background: var(--surface2); border-radius: 12px; padding: 4px; margin-bottom: 20px; width: fit-content; }
+  .tab { padding: 7px 16px; border-radius: 9px; cursor: pointer; font-size: 0.83rem; font-weight: 600; transition: var(--transition); color: var(--text2); border: none; background: none; font-family: inherit; }
+  .tab.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+  /* Profit chart */
+  .mini-chart { height: 40px; display: flex; align-items: flex-end; gap: 3px; }
+  .mini-bar { flex: 1; border-radius: 4px 4px 0 0; background: linear-gradient(to top, var(--accent), rgba(59,130,246,0.3)); min-width: 4px; }
+
+  /* Input with prefix */
+  .input-group { position: relative; }
+  .input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 0.8rem; font-weight: 600; pointer-events: none; }
+  .input-group .form-input { padding-left: 38px; }
+
+  /* Number input spinner removal */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  /* Floating action hint */
+  .fab { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: none; }
+  @media (max-width: 768px) { .fab { display: block; } }
+
+  /* Profile page */
+  .profile-banner { height: 160px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: var(--radius) var(--radius) 0 0; position: relative; }
+  .profile-avatar-wrap { position: absolute; bottom: -36px; left: 28px; }
+  .profile-avatar { width: 72px; height: 72px; border-radius: 50%; border: 4px solid var(--surface); background: linear-gradient(135deg,#f59e0b,#ef4444); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.6rem; color: white; }
+
+  /* Recents table */
+  .recent-table { width: 100%; }
+  .recent-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .recent-row:last-child { border-bottom: none; }
+  .recent-avatar { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; color: var(--accent); flex-shrink: 0; }
+  .recent-info { flex: 1; }
+  .recent-name { font-weight: 600; font-size: 0.875rem; }
+  .recent-date { font-size: 0.75rem; color: var(--text2); }
+  .recent-amount { font-weight: 700; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ─── Icons ───────────────────────────────────────────────────────────────────
+const icons = {
+  dashboard: '⊞', invoice: '📄', clients: '👥', history: '🕒',
+  settings: '⚙️', profile: '👤', plus: '+', search: '🔍', bell: '🔔',
+  sun: '☀️', moon: '🌙', pk: '🇵🇰', menu: '☰', close: '✕',
+  edit: '✏️', delete: '🗑️', pdf: '📥', print: '🖨️', email: '📧',
+  copy: '📋', check: '✓', arrow: '→', eye: '👁️', back: '←',
+  upload: '📤', trash: '🗑️', save: '💾', send: '📨', sort: '⇅',
+  filter: '⊟', refresh: '↻', chart: '📊', money: '₨', star: '★',
+  phone: '📱', location: '📍', bank: '🏦', pay: '💳',
+};
+
+// ─── Local Storage Helpers ────────────────────────────────────────────────────
+const storage = {
+  get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+
+// ─── Seed Data ────────────────────────────────────────────────────────────────
+const seedClients = [
+  { id: 'c1', name: 'TechPk Solutions', email: 'info@techpk.com', phone: '03001234567', city: 'Karachi', address: 'Block 5, Clifton, Karachi', ntn: '1234567-8' },
+  { id: 'c2', name: 'Hamza Traders', email: 'hamza@traders.pk', phone: '03211234567', city: 'Lahore', address: 'Gulberg III, Lahore', ntn: '' },
+  { id: 'c3', name: 'Ali Digital Agency', email: 'ali@digitalagency.pk', phone: '03451234567', city: 'Islamabad', address: 'F-7/1, Islamabad', ntn: '9876543-2' },
+  { id: 'c4', name: 'Zara Fashion House', email: 'contact@zarafashion.pk', phone: '03111234567', city: 'Karachi', address: 'Tariq Road, Karachi', ntn: '' },
+];
+
+const seedInvoices = [
+  { id: 'INV-001', clientId: 'c1', clientName: 'TechPk Solutions', clientEmail: 'info@techpk.com', clientPhone: '03001234567', clientAddress: 'Block 5, Clifton, Karachi', clientCity: 'Karachi', items: [{ id: 1, desc: 'Website Development', qty: 1, price: 85000, tax: 17, discount: 0 }, { id: 2, desc: 'SEO Package (3 months)', qty: 3, price: 12000, tax: 17, discount: 5 }], date: '2026-05-15', dueDate: '2026-06-15', status: 'paid', currency: 'PKR', notes: 'Thank you for your business!', terms: 'Payment due within 30 days.', paymentMethod: 'Bank Transfer', ntn: '1234567-8', strn: '' },
+  { id: 'INV-002', clientId: 'c2', clientName: 'Hamza Traders', clientEmail: 'hamza@traders.pk', clientPhone: '03211234567', clientAddress: 'Gulberg III, Lahore', clientCity: 'Lahore', items: [{ id: 1, desc: 'Branding Package', qty: 1, price: 45000, tax: 17, discount: 10 }], date: '2026-05-28', dueDate: '2026-06-28', status: 'pending', currency: 'PKR', notes: '', terms: '', paymentMethod: 'JazzCash', ntn: '', strn: '' },
+  { id: 'INV-003', clientId: 'c3', clientName: 'Ali Digital Agency', clientEmail: 'ali@digitalagency.pk', clientPhone: '03451234567', clientAddress: 'F-7/1, Islamabad', clientCity: 'Islamabad', items: [{ id: 1, desc: 'Social Media Management', qty: 1, price: 35000, tax: 17, discount: 0 }, { id: 2, desc: 'Content Writing (10 articles)', qty: 10, price: 3500, tax: 0, discount: 0 }], date: '2026-04-10', dueDate: '2026-05-10', status: 'overdue', currency: 'PKR', notes: 'Please clear dues ASAP', terms: '', paymentMethod: 'EasyPaisa', ntn: '9876543-2', strn: '' },
+  { id: 'INV-004', clientId: 'c4', clientName: 'Zara Fashion House', clientEmail: 'contact@zarafashion.pk', clientPhone: '03111234567', clientAddress: 'Tariq Road, Karachi', clientCity: 'Karachi', items: [{ id: 1, desc: 'E-commerce Store Setup', qty: 1, price: 120000, tax: 17, discount: 5 }], date: '2026-06-01', dueDate: '2026-07-01', status: 'paid', currency: 'PKR', notes: 'Includes 6 months support', terms: 'Net 30', paymentMethod: 'Bank Transfer', ntn: '', strn: '' },
+];
+
+// ─── Calculations ─────────────────────────────────────────────────────────────
+const calcItem = (item) => {
+  const base = item.qty * item.price;
+  const discAmt = base * (item.discount / 100);
+  const afterDisc = base - discAmt;
+  const taxAmt = afterDisc * (item.tax / 100);
+  return { base, discAmt, afterDisc, taxAmt, total: afterDisc + taxAmt };
+};
+const calcTotals = (items) => {
+  let subtotal = 0, totalDisc = 0, totalTax = 0;
+  items.forEach(item => {
+    const c = calcItem(item);
+    subtotal += c.base;
+    totalDisc += c.discAmt;
+    totalTax += c.taxAmt;
+  });
+  const afterDisc = subtotal - totalDisc;
+  return { subtotal, totalDisc, afterDisc, totalTax, grand: afterDisc + totalTax };
+};
+const fmtPKR = (n) => `₨ ${Number(n || 0).toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+const fmtDate = (d) => { if (!d) return '—'; return new Date(d).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' }); };
+
+// ─── Toast System ─────────────────────────────────────────────────────────────
+let toastFn = null;
+function ToastContainer() {
+  const [toasts, setToasts] = useState([]);
+  useEffect(() => {
+    toastFn = (msg, type = 'success') => {
+      const id = Date.now();
+      setToasts(t => [...t, { id, msg, type }]);
+      setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3200);
+    };
+  }, []);
+  const icons2 = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+  return (
+    <div className="toast-container">
+      {toasts.map(t => (
+        <div key={t.id} className={`toast ${t.type}`}>
+          <div className="toast-icon">{icons2[t.type]}</div>
+          <span>{t.msg}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+const toast = (msg, type) => toastFn && toastFn(msg, type);
+
+// ─── Loading Screen ───────────────────────────────────────────────────────────
+function LoadingScreen({ done }) {
+  return (
+    <div className={`loading-screen ${done ? 'fade-out' : ''}`}>
+      <div className="loading-logo">Quick Invoice</div>
+      <div className="loading-tagline">Smart Billing Solution • Pakistan</div>
+      <div className="loading-bar"><div className="loading-bar-fill"></div></div>
+      <div className="pk-badge">
+        <div className="pk-flag"></div>
+        Made for Pakistan
+      </div>
+    </div>
+  );
+}
+
+// ─── Topbar ───────────────────────────────────────────────────────────────────
+function Topbar({ theme, setTheme, page, onMenuClick, searchTerm, setSearchTerm }) {
+  const pages = { dashboard: 'Dashboard', createInvoice: 'Create Invoice', history: 'Invoice History', clients: 'Clients', settings: 'Settings', profile: 'Profile' };
+  return (
+    <div className="topbar">
+      <div className="topbar-left">
+        <button className="btn-icon" onClick={onMenuClick} style={{ display: 'none' }} id="menu-btn">
+          ☰
+        </button>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: '1rem' }}>{pages[page] || page}</div>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text3)' }}>
+            {new Date().toLocaleDateString('en-PK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+          </div>
+        </div>
+      </div>
+      <div className="topbar-right">
+        <div className="search-box">
+          <span style={{ color: 'var(--text3)', fontSize: '0.9rem' }}>🔍</span>
+          <input placeholder="Search invoices, clients..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+        </div>
+        <div className="theme-toggle">
+          <button className={`theme-btn ${theme === 'dark' ? 'active' : ''}`} onClick={() => setTheme('dark')}>🌙</button>
+          <button className={`theme-btn ${theme === 'light' ? 'active' : ''}`} onClick={() => setTheme('light')}>☀️</button>
+          <button className={`theme-btn ${theme === 'pakistan' ? 'active' : ''}`} onClick={() => setTheme('pakistan')}>🇵🇰</button>
+        </div>
+        <button className="btn-icon" style={{ position: 'relative' }}>
+          🔔
+          <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, background: '#ef4444', borderRadius: '50%', border: '2px solid var(--surface)' }}></span>
+        </button>
+        <div className="avatar">IB</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+function Sidebar({ page, setPage, collapsed, mobileOpen, onClose }) {
+  const nav = [
+    { id: 'dashboard', icon: '⊞', label: 'Dashboard' },
+    { id: 'createInvoice', icon: '✚', label: 'New Invoice' },
+    { id: 'history', icon: '📄', label: 'Invoices', badge: '4' },
+    { id: 'clients', icon: '👥', label: 'Clients' },
+  ];
+  const nav2 = [
+    { id: 'settings', icon: '⚙️', label: 'Settings' },
+    { id: 'profile', icon: '👤', label: 'Profile' },
+  ];
+  const cls = `sidebar${collapsed ? ' collapsed' : ''}${mobileOpen ? ' mobile-open' : ''}`;
+  return (
+    <>
+      <div className={`sidebar-overlay ${mobileOpen ? 'show' : ''}`} onClick={onClose}></div>
+      <aside className={cls}>
+        <div className="sidebar-header">
+          <div className="brand-icon">QI</div>
+          {!collapsed && (
+            <div className="brand-text">
+              <div className="brand-name">Quick Invoice PK</div>
+              <div className="brand-sub">Smart Billing Solution</div>
+            </div>
+          )}
+        </div>
+        <div className="nav-section">
+          {!collapsed && <div className="nav-label">Main Menu</div>}
+          {nav.map(n => (
+            <div key={n.id} className={`nav-item ${page === n.id ? 'active' : ''}`} onClick={() => { setPage(n.id); onClose(); }}>
+              <span className="nav-icon">{n.icon}</span>
+              {!collapsed && <span className="nav-text">{n.label}</span>}
+              {!collapsed && n.badge && <span className="nav-badge">{n.badge}</span>}
+            </div>
+          ))}
+        </div>
+        <div className="nav-section" style={{ marginTop: 'auto' }}>
+          {!collapsed && <div className="nav-label">Account</div>}
+          {nav2.map(n => (
+            <div key={n.id} className={`nav-item ${page === n.id ? 'active' : ''}`} onClick={() => { setPage(n.id); onClose(); }}>
+              <span className="nav-icon">{n.icon}</span>
+              {!collapsed && <span className="nav-text">{n.label}</span>}
+            </div>
+          ))}
+        </div>
+        {!collapsed && (
+          <div style={{ padding: '16px', borderTop: '1px solid var(--border)', marginTop: 8 }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.7 }}>
+              © 2026 Quick Invoice Pakistan<br/>
+              <span style={{ color: 'var(--accent)' }}>Made By Ibrahim</span>
+            </div>
+          </div>
+        )}
+      </aside>
+    </>
+  );
+}
+
+// ─── Dashboard ────────────────────────────────────────────────────────────────
+function Dashboard({ invoices, setPage, setEditInvoice }) {
+  const paid = invoices.filter(i => i.status === 'paid');
+  const pending = invoices.filter(i => i.status === 'pending');
+  const overdue = invoices.filter(i => i.status === 'overdue');
+  const totalEarnings = paid.reduce((sum, i) => sum + calcTotals(i.items).grand, 0);
+  const pendingAmt = pending.reduce((sum, i) => sum + calcTotals(i.items).grand, 0);
+  const overdueAmt = overdue.reduce((sum, i) => sum + calcTotals(i.items).grand, 0);
+
+  const stats = [
+    { label: 'Total Earnings', value: fmtPKR(totalEarnings), icon: '₨', color: 'blue', sub: `${paid.length} paid invoices`, change: '+12%', up: true },
+    { label: 'Pending Amount', value: fmtPKR(pendingAmt), icon: '⏳', color: 'yellow', sub: `${pending.length} pending`, change: '-3%', up: false },
+    { label: 'Overdue Amount', value: fmtPKR(overdueAmt), icon: '⚠️', color: 'red', sub: `${overdue.length} overdue`, change: '+2', up: false },
+    { label: 'Total Invoices', value: invoices.length, icon: '📄', color: 'green', sub: 'All time', change: '+4', up: true },
+  ];
+  const colorMap = { blue: '#3b82f6', yellow: '#f59e0b', red: '#ef4444', green: '#10b981' };
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun'];
+  const bars = [65, 45, 80, 55, 90, 70];
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <div className="page-title">Welcome back, Ibrahim 👋</div>
+          <div className="page-sub">Here's what's happening with your business today.</div>
+        </div>
+        <button className="btn btn-primary" onClick={() => setPage('createInvoice')}>
+          ✚ &nbsp;New Invoice
+        </button>
+      </div>
+
+      <div className="stats-grid">
+        {stats.map((s, i) => (
+          <div key={i} className={`stat-card ${s.color}`} style={{ animationDelay: `${i * 0.08}s` }}>
+            <div className="stat-icon" style={{ background: `rgba(${s.color === 'blue' ? '59,130,246' : s.color === 'yellow' ? '245,158,11' : s.color === 'red' ? '239,68,68' : '16,185,129'},0.15)` }}>
+              {s.icon}
+            </div>
+            <div className="stat-value" style={{ color: colorMap[s.color] }}>{s.value}</div>
+            <div className="stat-label">{s.label}</div>
+            <div className="stat-label" style={{ fontSize: '0.72rem', marginTop: 4 }}>{s.sub}</div>
+            <div className={`stat-change ${s.up ? 'up' : 'down'}`}>
+              {s.up ? '↑' : '↓'} {s.change} this month
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid-2" style={{ marginBottom: 24 }}>
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Revenue Overview</div>
+            <div className="tabs" style={{ marginBottom: 0 }}>
+              <button className="tab active">6M</button>
+              <button className="tab">1Y</button>
+            </div>
+          </div>
+          <div className="bar-chart">
+            {bars.map((h, i) => (
+              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <div className="bar-item" style={{ height: `${h}%`, background: `linear-gradient(to top, var(--accent), rgba(99,102,241,0.6))` }}></div>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>{months[i]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card">
+          <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: 16 }}>Invoice Status</div>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+            {[['Paid', paid.length, '#10b981'], ['Pending', pending.length, '#f59e0b'], ['Overdue', overdue.length, '#ef4444']].map(([l, c, col]) => (
+              <div key={l} style={{ flex: 1, textAlign: 'center', background: 'var(--surface2)', borderRadius: 12, padding: 14 }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: col }}>{c}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text2)' }}>{l}</div>
+              </div>
+            ))}
+          </div>
+          <div>
+            {[['Paid', (paid.length / invoices.length) * 100 || 0, '#10b981'], ['Pending', (pending.length / invoices.length) * 100 || 0, '#f59e0b'], ['Overdue', (overdue.length / invoices.length) * 100 || 0, '#ef4444']].map(([l, pct, col]) => (
+              <div key={l} style={{ marginBottom: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: 5 }}>
+                  <span style={{ color: 'var(--text2)' }}>{l}</span>
+                  <span style={{ color: col, fontWeight: 600 }}>{Math.round(pct)}%</span>
+                </div>
+                <div style={{ height: 6, background: 'var(--surface2)', borderRadius: 99, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: col, borderRadius: 99, transition: 'width 1s ease' }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Recent Invoices</div>
+          <button className="btn btn-secondary btn-sm" onClick={() => setPage('history')}>View All</button>
+        </div>
+        {invoices.slice(0, 4).map(inv => {
+          const t = calcTotals(inv.items);
+          return (
+            <div key={inv.id} className="recent-row" onClick={() => { setEditInvoice(inv); setPage('createInvoice'); }} style={{ cursor: 'pointer' }}>
+              <div className="recent-avatar">{inv.clientName[0]}</div>
+              <div className="recent-info">
+                <div className="recent-name">{inv.clientName}</div>
+                <div className="recent-date">{inv.id} • {fmtDate(inv.date)}</div>
+              </div>
+              <span className={`badge badge-${inv.status}`}>{inv.status}</span>
+              <div className="recent-amount" style={{ color: 'var(--accent)', minWidth: 100, textAlign: 'right' }}>{fmtPKR(t.grand)}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Invoice Form ─────────────────────────────────────────────────────────────
+function CreateInvoice({ invoices, setInvoices, clients, editInvoice, setEditInvoice, setPage }) {
+  const nextNum = `INV-${String(invoices.length + 1).padStart(3, '0')}`;
+  const blank = {
+    id: nextNum, clientName: '', clientEmail: '', clientPhone: '', clientAddress: '', clientCity: 'Karachi',
+    businessName: 'Quick Invoice Pakistan', businessEmail: 'billing@quickinvoice.pk',
+    businessPhone: '03001234567', businessAddress: 'Karachi, Pakistan',
+    items: [{ id: 1, desc: '', qty: 1, price: 0, tax: 17, discount: 0 }],
+    date: new Date().toISOString().split('T')[0],
+    dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+    status: 'pending', currency: 'PKR', notes: 'Thank you for your business!',
+    terms: 'Payment is due within 30 days. Please include invoice number on your payment.',
+    paymentMethod: 'Bank Transfer', ntn: '', strn: '',
+    bankName: 'HBL', accountTitle: 'Ibrahim Solutions', accountNumber: '1234567890', iban: 'PK36SCBL0000001123456702',
+    logo: null, watermark: true, template: 'modern',
+  };
+
+  const [form, setForm] = useState(editInvoice ? { ...editInvoice } : blank);
+  const [tab, setTab] = useState('details');
+  const [logoPreview, setLogoPreview] = useState(editInvoice?.logo || null);
+  const [dragging, setDragging] = useState(false);
+  const fileRef = useRef();
+
+  useEffect(() => { if (editInvoice) { setForm({ ...editInvoice }); setLogoPreview(editInvoice.logo || null); } }, [editInvoice]);
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const setItem = (id, k, v) => setForm(f => ({ ...f, items: f.items.map(it => it.id === id ? { ...it, [k]: parseFloat(v) || (k === 'desc' ? v : 0) } : it) }));
+  const addItem = () => setForm(f => ({ ...f, items: [...f.items, { id: Date.now(), desc: '', qty: 1, price: 0, tax: 17, discount: 0 }] }));
+  const removeItem = (id) => setForm(f => ({ ...f, items: f.items.filter(it => it.id !== id) }));
+
+  const totals = calcTotals(form.items);
+
+  const fillClient = (c) => {
+    setForm(f => ({ ...f, clientName: c.name, clientEmail: c.email, clientPhone: c.phone, clientAddress: c.address, clientCity: c.city }));
+    toast('Client details filled', 'success');
+  };
+
+  const handleLogo = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => { setLogoPreview(e.target.result); set('logo', e.target.result); };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSave = () => {
+    if (!form.clientName) return toast('Please enter client name', 'error');
+    if (form.items.some(i => !i.desc)) return toast('Please fill all item descriptions', 'error');
+    const exists = invoices.find(i => i.id === form.id);
+    if (exists) {
+      setInvoices(inv => inv.map(i => i.id === form.id ? form : i));
+      toast('Invoice updated!', 'success');
+    } else {
+      setInvoices(inv => [form, ...inv]);
+      toast('Invoice saved!', 'success');
+    }
+    setEditInvoice(null);
+    setTimeout(() => setPage('history'), 600);
+  };
+
+  const handlePDF = () => {
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const W = 210, pad = 18;
+      let y = pad;
+
+      // Header bar
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, W, 30, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('INVOICE', pad, 20);
+      doc.setFontSize(11);
+      doc.text(form.id, W - pad, 20, { align: 'right' });
+      y = 40;
+
+      // Business & Client
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+      doc.setTextColor(148, 163, 184);
+      doc.text('FROM', pad, y);
+      doc.text('TO', W / 2 + 5, y);
+      y += 6;
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.text(form.businessName || 'Your Business', pad, y);
+      doc.text(form.clientName || '—', W / 2 + 5, y);
+      y += 5;
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.setTextColor(71, 85, 105);
+      doc.text(form.businessPhone || '', pad, y);
+      doc.text(form.clientPhone || '', W / 2 + 5, y);
+      y += 4;
+      doc.text(form.businessAddress || '', pad, y);
+      doc.text((form.clientAddress || '') + (form.clientCity ? `, ${form.clientCity}` : ''), W / 2 + 5, y);
+      y += 10;
+
+      // Meta row
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(pad, y, W - pad * 2, 16, 3, 3, 'F');
+      doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(148, 163, 184);
+      doc.text('INVOICE DATE', pad + 5, y + 6);
+      doc.text('DUE DATE', pad + 50, y + 6);
+      doc.text('STATUS', pad + 100, y + 6);
+      doc.text('PAYMENT', pad + 140, y + 6);
+      doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+      doc.text(fmtDate(form.date), pad + 5, y + 12);
+      doc.text(fmtDate(form.dueDate), pad + 50, y + 12);
+      doc.text(form.status.toUpperCase(), pad + 100, y + 12);
+      doc.text(form.paymentMethod || '', pad + 140, y + 12);
+      y += 24;
+
+      // Table header
+      doc.setFillColor(15, 23, 42);
+      doc.rect(pad, y, W - pad * 2, 9, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'bold');
+      doc.text('DESCRIPTION', pad + 3, y + 6);
+      doc.text('QTY', 125, y + 6);
+      doc.text('PRICE', 140, y + 6);
+      doc.text('TAX', 158, y + 6);
+      doc.text('AMOUNT', W - pad - 3, y + 6, { align: 'right' });
+      y += 9;
+
+      // Items
+      form.items.forEach((item, idx) => {
+        const c = calcItem(item);
+        if (idx % 2 === 1) { doc.setFillColor(248, 250, 252); doc.rect(pad, y, W - pad * 2, 9, 'F'); }
+        doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+        doc.text(item.desc || '—', pad + 3, y + 6);
+        doc.text(String(item.qty), 125, y + 6);
+        doc.text(fmtPKR(item.price), 140, y + 6);
+        doc.text(`${item.tax}%`, 158, y + 6);
+        doc.setFont('helvetica', 'bold');
+        doc.text(fmtPKR(c.total), W - pad - 3, y + 6, { align: 'right' });
+        y += 9;
+      });
+      y += 8;
+
+      // Totals
+      const tx = W - pad - 3;
+      const lx = 135;
+      doc.setFontSize(8.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(71, 85, 105);
+      [[`Subtotal`, fmtPKR(totals.subtotal)], [`Discount`, `-${fmtPKR(totals.totalDisc)}`], [`GST (${form.items[0]?.tax || 17}%)`, fmtPKR(totals.totalTax)]].forEach(([l, v]) => {
+        doc.text(l, lx, y); doc.text(v, tx, y, { align: 'right' }); y += 7;
+      });
+      // Grand total
+      doc.setFillColor(59, 130, 246);
+      doc.roundedRect(lx - 3, y, tx - lx + 6, 11, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+      doc.text('TOTAL AMOUNT', lx, y + 7.5);
+      doc.text(fmtPKR(totals.grand), tx, y + 7.5, { align: 'right' });
+      y += 18;
+
+      // Payment & banking
+      if (form.bankName) {
+        doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+        doc.text('Banking Details:', pad, y); y += 6;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105);
+        doc.text(`Bank: ${form.bankName}   Account Title: ${form.accountTitle}   Account #: ${form.accountNumber}`, pad, y); y += 5;
+        if (form.iban) { doc.text(`IBAN: ${form.iban}`, pad, y); y += 5; }
+      }
+      if (form.notes) { y += 3; doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.text('Notes:', pad, y); y += 5; doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105); doc.text(form.notes, pad, y); y += 5; }
+
+      // Footer
+      doc.setFontSize(7); doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'normal');
+      doc.text('© 2026 Quick Invoice Pakistan — Made By Ibrahim', W / 2, 287, { align: 'center' });
+      if (form.watermark) {
+        doc.setTextColor(220, 220, 220); doc.setFontSize(36); doc.setFont('helvetica', 'bold');
+        doc.saveGraphicsState && doc.saveGraphicsState();
+        doc.text('Made in Pakistan', W / 2, 148, { align: 'center', angle: 45 });
+      }
+
+      doc.save(`${form.id}.pdf`);
+      toast('PDF downloaded!', 'success');
+    } catch (e) { toast('PDF export failed: ' + e.message, 'error'); }
+  };
+
+  return (
+    <div className="page" style={{ maxWidth: '100%' }}>
+      <div className="page-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button className="btn btn-secondary btn-sm" onClick={() => { setEditInvoice(null); setPage('history'); }}>← Back</button>
+          <div>
+            <div className="page-title">{editInvoice ? 'Edit Invoice' : 'Create Invoice'}</div>
+            <div className="page-sub">{form.id}</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button className="btn btn-secondary" onClick={() => { navigator.clipboard.writeText(`Invoice ${form.id} for ${form.clientName}`); toast('Link copied!', 'info'); }}>📋 Copy</button>
+          <button className="btn btn-secondary" onClick={handlePDF}>📥 PDF</button>
+          <button className="btn btn-secondary" onClick={() => { window.print(); }}>🖨️ Print</button>
+          <button className="btn btn-primary" onClick={handleSave}>💾 Save Invoice</button>
+        </div>
+      </div>
+
+      <div className="grid-layout">
+        {/* Form Section */}
+        <div>
+          <div className="tabs">
+            {['details', 'items', 'payment', 'preview'].map(t => (
+              <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
+                {{ details: '📋 Details', items: '📦 Items', payment: '💳 Payment', preview: '👁️ Preview' }[t]}
+              </button>
+            ))}
+          </div>
+
+          {tab === 'details' && (
+            <div style={{ animation: 'fadeIn 0.3s ease' }}>
+              {/* Business Info */}
+              <div className="card" style={{ marginBottom: 16 }}>
+                <div style={{ fontWeight: 700, marginBottom: 16, fontSize: '0.9rem', color: 'var(--accent)' }}>🏢 Your Business</div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Business Name</label><input className="form-input" value={form.businessName} onChange={e => set('businessName', e.target.value)} /></div>
+                  <div className="form-group"><label className="form-label">Email</label><input className="form-input" value={form.businessEmail} onChange={e => set('businessEmail', e.target.value)} /></div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Phone (+92)</label><input className="form-input" value={form.businessPhone} onChange={e => set('businessPhone', e.target.value)} placeholder="03001234567" /></div>
+                  <div className="form-group"><label className="form-label">Address</label><input className="form-input" value={form.businessAddress} onChange={e => set('businessAddress', e.target.value)} /></div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Company Logo</label>
+                  <div className={`logo-upload ${dragging ? 'dragging' : ''}`}
+                    onDragOver={e => { e.preventDefault(); setDragging(true); }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={e => { e.preventDefault(); setDragging(false); handleLogo(e.dataTransfer.files[0]); }}
+                    onClick={() => fileRef.current?.click()}>
+                    <input type="file" ref={fileRef} accept="image/*" style={{ display: 'none' }} onChange={e => handleLogo(e.target.files[0])} />
+                    {logoPreview ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
+                        <img src={logoPreview} alt="Logo" style={{ width: 60, height: 60, objectFit: 'contain', borderRadius: 8 }} />
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>Logo uploaded! Click to change.</span>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>📤</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>Drag & drop logo here or click to upload</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text3)', marginTop: 4 }}>PNG, JPG up to 2MB</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Client Info */}
+              <div className="card" style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--accent)' }}>👤 Client Details</div>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {clients.slice(0, 3).map(c => (
+                      <button key={c.id} className="btn btn-secondary btn-sm" onClick={() => fillClient(c)}>{c.name.split(' ')[0]}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Client / Company Name *</label><input className="form-input" value={form.clientName} onChange={e => set('clientName', e.target.value)} placeholder="e.g. TechPk Solutions" /></div>
+                  <div className="form-group"><label className="form-label">Email</label><input className="form-input" value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)} placeholder="client@company.pk" /></div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Phone (+92)</label><input className="form-input" value={form.clientPhone} onChange={e => set('clientPhone', e.target.value)} placeholder="03XX XXXXXXX" /></div>
+                  <div className="form-group"><label className="form-label">City</label>
+                    <select className="form-input form-select" value={form.clientCity} onChange={e => set('clientCity', e.target.value)}>
+                      {['Karachi','Lahore','Islamabad','Rawalpindi','Peshawar','Quetta','Multan','Faisalabad','Hyderabad','Sialkot'].map(c => <option key={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group"><label className="form-label">Address</label><input className="form-input" value={form.clientAddress} onChange={e => set('clientAddress', e.target.value)} placeholder="Street, Block, Area" /></div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">NTN Number</label><input className="form-input" value={form.ntn} onChange={e => set('ntn', e.target.value)} placeholder="1234567-8" /></div>
+                  <div className="form-group"><label className="form-label">STRN Number</label><input className="form-input" value={form.strn} onChange={e => set('strn', e.target.value)} placeholder="Optional" /></div>
+                </div>
+              </div>
+
+              {/* Invoice Meta */}
+              <div className="card">
+                <div style={{ fontWeight: 700, marginBottom: 16, fontSize: '0.9rem', color: 'var(--accent)' }}>📅 Invoice Details</div>
+                <div className="form-row-3">
+                  <div className="form-group"><label className="form-label">Invoice No.</label><input className="form-input" value={form.id} onChange={e => set('id', e.target.value)} style={{ fontFamily: 'JetBrains Mono, monospace' }} /></div>
+                  <div className="form-group"><label className="form-label">Invoice Date</label><input className="form-input" type="date" value={form.date} onChange={e => set('date', e.target.value)} /></div>
+                  <div className="form-group"><label className="form-label">Due Date</label><input className="form-input" type="date" value={form.dueDate} onChange={e => set('dueDate', e.target.value)} /></div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Status</label>
+                    <select className="form-input form-select" value={form.status} onChange={e => set('status', e.target.value)}>
+                      <option value="pending">⏳ Pending</option>
+                      <option value="paid">✅ Paid</option>
+                      <option value="overdue">⚠️ Overdue</option>
+                    </select>
+                  </div>
+                  <div className="form-group"><label className="form-label">Currency</label>
+                    <select className="form-input form-select" value={form.currency} onChange={e => set('currency', e.target.value)}>
+                      <option value="PKR">🇵🇰 PKR (₨)</option>
+                      <option value="USD">🇺🇸 USD ($)</option>
+                      <option value="GBP">🇬🇧 GBP (£)</option>
+                      <option value="AED">🇦🇪 AED</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group"><label className="form-label">Notes</label><textarea className="form-input" value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Thank you for your business!" /></div>
+                <div className="form-group"><label className="form-label">Terms & Conditions</label><textarea className="form-input" value={form.terms} onChange={e => set('terms', e.target.value)} placeholder="Payment due in 30 days..." /></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div className={`toggle-switch ${form.watermark ? 'on' : ''}`} onClick={() => set('watermark', !form.watermark)}></div>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>Show "Made in Pakistan" watermark</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {tab === 'items' && (
+            <div style={{ animation: 'fadeIn 0.3s ease' }}>
+              <div className="card" style={{ marginBottom: 16 }}>
+                <div style={{ fontWeight: 700, marginBottom: 16, fontSize: '0.9rem', color: 'var(--accent)' }}>📦 Products / Services</div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="invoice-table" style={{ minWidth: 600 }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '36%' }}>Description</th>
+                        <th style={{ width: '8%' }}>Qty</th>
+                        <th style={{ width: '16%' }}>Price (₨)</th>
+                        <th style={{ width: '10%' }}>GST %</th>
+                        <th style={{ width: '10%' }}>Disc %</th>
+                        <th style={{ width: '16%', textAlign: 'right' }}>Total (₨)</th>
+                        <th style={{ width: '4%' }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {form.items.map(item => {
+                        const c = calcItem(item);
+                        return (
+                          <tr key={item.id}>
+                            <td><input className="form-input" style={{ padding: '6px 10px' }} value={item.desc} onChange={e => setItem(item.id, 'desc', e.target.value)} placeholder="Service description" /></td>
+                            <td><input className="form-input" style={{ padding: '6px 10px', textAlign: 'center' }} type="number" value={item.qty} onChange={e => setItem(item.id, 'qty', e.target.value)} min="1" /></td>
+                            <td><input className="form-input" style={{ padding: '6px 10px' }} type="number" value={item.price} onChange={e => setItem(item.id, 'price', e.target.value)} min="0" /></td>
+                            <td><input className="form-input" style={{ padding: '6px 10px', textAlign: 'center' }} type="number" value={item.tax} onChange={e => setItem(item.id, 'tax', e.target.value)} min="0" max="100" /></td>
+                            <td><input className="form-input" style={{ padding: '6px 10px', textAlign: 'center' }} type="number" value={item.discount} onChange={e => setItem(item.id, 'discount', e.target.value)} min="0" max="100" /></td>
+                            <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem' }}>{fmtPKR(c.total)}</td>
+                            <td><button className="btn-icon" style={{ padding: '5px', color: 'var(--danger)' }} onClick={() => form.items.length > 1 && removeItem(item.id)}>🗑️</button></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <button className="btn btn-secondary btn-sm" style={{ marginTop: 12 }} onClick={addItem}>+ Add Item</button>
+              </div>
+
+              <div className="card">
+                <div style={{ fontWeight: 700, marginBottom: 16, fontSize: '0.9rem', color: 'var(--accent)' }}>💰 Invoice Summary</div>
+                {[['Subtotal', fmtPKR(totals.subtotal)], ['Total Discount', `-${fmtPKR(totals.totalDisc)}`], ['After Discount', fmtPKR(totals.afterDisc)], [`GST (${form.items[0]?.tax || 17}%)`, fmtPKR(totals.totalTax)]].map(([l, v]) => (
+                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)', fontSize: '0.875rem' }}>
+                    <span style={{ color: 'var(--text2)' }}>{l}</span>
+                    <span style={{ fontWeight: 600, color: l.includes('Discount') ? '#ef4444' : 'var(--text)' }}>{v}</span>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 18px', background: 'linear-gradient(135deg, var(--accent), var(--accent2))', borderRadius: 12, marginTop: 12, color: 'white' }}>
+                  <span style={{ fontWeight: 800, fontSize: '1rem' }}>Grand Total</span>
+                  <span style={{ fontWeight: 900, fontSize: '1.1rem' }}>{fmtPKR(totals.grand)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {tab === 'payment' && (
+            <div style={{ animation: 'fadeIn 0.3s ease' }}>
+              <div className="card" style={{ marginBottom: 16 }}>
+                <div style={{ fontWeight: 700, marginBottom: 16, fontSize: '0.9rem', color: 'var(--accent)' }}>💳 Payment Method</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  {[['JazzCash', '📱', '#e44c65'], ['EasyPaisa', '💚', '#0f9d58'], ['Bank Transfer', '🏦', '#3b82f6'], ['Cash', '💵', '#f59e0b']].map(([method, icon, color]) => (
+                    <div key={method} className={`payment-method ${form.paymentMethod === method ? 'selected' : ''}`} onClick={() => set('paymentMethod', method)}>
+                      <div className="payment-icon" style={{ background: `${color}22` }}>{icon}</div>
+                      <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{method}</span>
+                      {form.paymentMethod === method && <span style={{ marginLeft: 'auto', color: 'var(--accent)' }}>✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="card">
+                <div style={{ fontWeight: 700, marginBottom: 16, fontSize: '0.9rem', color: 'var(--accent)' }}>🏦 Banking Details</div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Bank Name</label>
+                    <select className="form-input form-select" value={form.bankName} onChange={e => set('bankName', e.target.value)}>
+                      {['HBL','UBL','MCB','NBP','Allied Bank','Bank Alfalah','Meezan Bank','Standard Chartered','Askari Bank','JS Bank'].map(b => <option key={b}>{b}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group"><label className="form-label">Account Title</label><input className="form-input" value={form.accountTitle} onChange={e => set('accountTitle', e.target.value)} /></div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group"><label className="form-label">Account Number</label><input className="form-input" value={form.accountNumber} onChange={e => set('accountNumber', e.target.value)} style={{ fontFamily: 'JetBrains Mono, monospace' }} /></div>
+                  <div className="form-group"><label className="form-label">IBAN</label><input className="form-input" value={form.iban} onChange={e => set('iban', e.target.value)} placeholder="PK36XXXX..." style={{ fontFamily: 'JetBrains Mono, monospace' }} /></div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {tab === 'preview' && (
+            <InvoicePreview form={form} totals={totals} logoPreview={logoPreview} />
+          )}
+        </div>
+
+        {/* Live Summary Sidebar */}
+        <div style={{ position: 'sticky', top: 80 }}>
+          <div className="card" style={{ marginBottom: 16 }}>
+            <div style={{ fontWeight: 700, marginBottom: 14, fontSize: '0.9rem' }}>📊 Live Summary</div>
+            <div style={{ background: 'var(--surface2)', borderRadius: 10, padding: 14, marginBottom: 12 }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Grand Total</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, background: 'linear-gradient(135deg, var(--accent), var(--accent2))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{fmtPKR(totals.grand)}</div>
+            </div>
+            <div style={{ fontSize: '0.82rem', color: 'var(--text2)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}><span>Client</span><span style={{ fontWeight: 600, color: 'var(--text)' }}>{form.clientName || '—'}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}><span>Items</span><span style={{ fontWeight: 600, color: 'var(--text)' }}>{form.items.length}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}><span>Due Date</span><span style={{ fontWeight: 600, color: 'var(--text)' }}>{fmtDate(form.dueDate)}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}><span>Payment</span><span style={{ fontWeight: 600, color: 'var(--text)' }}>{form.paymentMethod}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}><span>Status</span><span className={`badge badge-${form.status}`}>{form.status}</span></div>
+            </div>
+          </div>
+          <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginBottom: 8 }} onClick={handleSave}>💾 Save Invoice</button>
+          <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', marginBottom: 8 }} onClick={handlePDF}>📥 Download PDF</button>
+          <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setTab('preview')}>👁️ Preview</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Invoice Preview ──────────────────────────────────────────────────────────
+function InvoicePreview({ form, totals: t, logoPreview }) {
+  const totals = t || calcTotals(form.items);
+  return (
+    <div className="invoice-preview-wrapper" style={{ animation: 'fadeIn 0.35s ease' }}>
+      <div className="invoice-preview" style={{ position: 'relative' }}>
+        {form.watermark && <div className={`inv-status-stamp ${form.status}`}>{form.status}</div>}
+        <div className="inv-header">
+          <div>
+            {logoPreview ? (
+              <img src={logoPreview} alt="Logo" style={{ width: 80, height: 80, objectFit: 'contain', borderRadius: 12 }} />
+            ) : (
+              <div className="inv-logo">QI</div>
+            )}
+            <div style={{ marginTop: 12, fontWeight: 800, fontSize: '1rem', color: '#0f172a' }}>{form.businessName}</div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: 2 }}>{form.businessEmail}</div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{form.businessPhone}</div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{form.businessAddress}</div>
+          </div>
+          <div className="inv-title-block">
+            <div className="inv-title">INVOICE</div>
+            <div className="inv-num">{form.id}</div>
+            <div style={{ marginTop: 16 }}>
+              <span className={`badge badge-${form.status}`}>{form.status}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="inv-parties">
+          <div>
+            <div className="inv-party-label">Bill To</div>
+            <div className="inv-party-name">{form.clientName || 'Client Name'}</div>
+            <div className="inv-party-info">
+              {form.clientEmail && <div>{form.clientEmail}</div>}
+              {form.clientPhone && <div>+92 {form.clientPhone.replace(/^0/, '')}</div>}
+              {form.clientAddress && <div>{form.clientAddress}</div>}
+              {form.clientCity && <div>{form.clientCity}, Pakistan</div>}
+              {form.ntn && <div>NTN: {form.ntn}</div>}
+            </div>
+          </div>
+          <div>
+            <div className="inv-party-label">Payment Details</div>
+            <div style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.7 }}>
+              <div><strong>Method:</strong> {form.paymentMethod}</div>
+              {form.bankName && <div><strong>Bank:</strong> {form.bankName}</div>}
+              {form.accountTitle && <div><strong>Account:</strong> {form.accountTitle}</div>}
+              {form.accountNumber && <div><strong>A/C No:</strong> {form.accountNumber}</div>}
+              {form.iban && <div><strong>IBAN:</strong> {form.iban}</div>}
+            </div>
+          </div>
+        </div>
+
+        <div className="inv-meta">
+          <div className="inv-meta-item"><label>Invoice Date</label><span>{fmtDate(form.date)}</span></div>
+          <div className="inv-meta-item"><label>Due Date</label><span>{fmtDate(form.dueDate)}</span></div>
+          <div className="inv-meta-item"><label>Currency</label><span>{form.currency} (₨)</span></div>
+          {form.ntn && <div className="inv-meta-item"><label>NTN</label><span>{form.ntn}</span></div>}
+        </div>
+
+        <table className="inv-items-table">
+          <thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Price</th><th>GST</th><th>Disc</th><th style={{ textAlign: 'right' }}>Amount</th></tr></thead>
+          <tbody>
+            {form.items.map((item, idx) => {
+              const c = calcItem(item);
+              return (
+                <tr key={item.id}>
+                  <td style={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8rem' }}>{String(idx + 1).padStart(2, '0')}</td>
+                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{item.desc || '—'}</td>
+                  <td style={{ color: '#475569' }}>{item.qty}</td>
+                  <td style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>₨{Number(item.price).toLocaleString()}</td>
+                  <td style={{ color: '#475569' }}>{item.tax}%</td>
+                  <td style={{ color: item.discount > 0 ? '#ef4444' : '#475569' }}>{item.discount > 0 ? `-${item.discount}%` : '—'}</td>
+                  <td style={{ color: '#0f172a', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }}>{fmtPKR(c.total)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <div className="inv-totals">
+          {[['Subtotal', fmtPKR(totals.subtotal)], ['Discount', `-${fmtPKR(totals.totalDisc)}`], [`GST (${form.items[0]?.tax || 17}%)`, fmtPKR(totals.totalTax)]].map(([l, v]) => (
+            <div key={l} className="inv-total-row"><span>{l}</span><span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{v}</span></div>
+          ))}
+          <div className="inv-grand-highlight">
+            <span>Total Due</span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{fmtPKR(totals.grand)}</span>
+          </div>
+        </div>
+        <div style={{ clear: 'both' }}></div>
+
+        <div className="inv-footer">
+          <div className="inv-notes">
+            {form.notes && <div><strong style={{ color: '#0f172a' }}>Notes:</strong><br/>{form.notes}</div>}
+            {form.terms && <div style={{ marginTop: 8 }}><strong style={{ color: '#0f172a' }}>Terms:</strong><br/>{form.terms}</div>}
+          </div>
+          <div>
+            {form.watermark && <div className="inv-watermark">Made in Pakistan 🇵🇰</div>}
+            <div className="inv-brand">© 2026 Quick Invoice Pakistan — Made By Ibrahim</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Invoice History ──────────────────────────────────────────────────────────
+function InvoiceHistory({ invoices, setInvoices, setPage, setEditInvoice, searchTerm }) {
+  const [filter, setFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
+  const [viewInv, setViewInv] = useState(null);
+
+  let filtered = invoices.filter(i => {
+    if (filter !== 'all' && i.status !== filter) return false;
+    if (searchTerm && !`${i.id} ${i.clientName} ${i.clientEmail}`.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
+  if (sortBy === 'date') filtered = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
+  if (sortBy === 'amount') filtered = [...filtered].sort((a, b) => calcTotals(b.items).grand - calcTotals(a.items).grand);
+
+  const deleteInv = (id) => { setInvoices(inv => inv.filter(i => i.id !== id)); toast('Invoice deleted', 'info'); };
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div><div className="page-title">Invoice History</div><div className="page-sub">{invoices.length} total invoices</div></div>
+        <button className="btn btn-primary" onClick={() => setPage('createInvoice')}>✚ New Invoice</button>
+      </div>
+
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div className="tabs" style={{ marginBottom: 0 }}>
+          {['all', 'paid', 'pending', 'overdue'].map(f => (
+            <button key={f} className={`tab ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+              {f === 'all' ? `All (${invoices.length})` : f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+        <select className="form-input form-select" style={{ width: 'auto', padding: '7px 32px 7px 12px' }} value={sortBy} onChange={e => setSortBy(e.target.value)}>
+          <option value="date">Sort: Date</option>
+          <option value="amount">Sort: Amount</option>
+        </select>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">📄</div>
+          <div className="empty-title">No invoices found</div>
+          <div style={{ fontSize: '0.875rem', marginBottom: 20 }}>Create your first invoice to get started</div>
+          <button className="btn btn-primary" onClick={() => setPage('createInvoice')}>✚ Create Invoice</button>
+        </div>
+      ) : (
+        <div>
+          {/* Header row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 140px 120px 120px 120px', gap: 12, padding: '8px 16px', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text3)', marginBottom: 4 }}>
+            <span>Invoice #</span><span>Client</span><span>Amount</span><span>Date</span><span>Status</span><span style={{ textAlign: 'right' }}>Actions</span>
+          </div>
+          {filtered.map((inv, idx) => {
+            const t = calcTotals(inv.items);
+            return (
+              <div key={inv.id} className="invoice-row" style={{ animationDelay: `${idx * 0.04}s` }} onClick={() => setViewInv(inv)}>
+                <div className="invoice-num">{inv.id}</div>
+                <div>
+                  <div className="invoice-client">{inv.clientName}</div>
+                  <div className="invoice-client-sub">{inv.clientEmail}</div>
+                </div>
+                <div className="invoice-amount" style={{ color: 'var(--accent)' }}>{fmtPKR(t.grand)}</div>
+                <div className="invoice-date">{fmtDate(inv.date)}</div>
+                <span className={`badge badge-${inv.status}`}>{inv.status}</span>
+                <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }} onClick={e => e.stopPropagation()}>
+                  <button className="btn-icon" style={{ padding: '5px 8px', fontSize: '0.8rem' }} title="Edit" onClick={() => { setEditInvoice(inv); setPage('createInvoice'); }}>✏️</button>
+                  <button className="btn-icon" style={{ padding: '5px 8px', fontSize: '0.8rem' }} title="Delete" onClick={() => deleteInv(inv.id)}>🗑️</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* View Modal */}
+      {viewInv && (
+        <div className="modal-overlay" onClick={() => setViewInv(null)}>
+          <div style={{ width: '100%', maxWidth: 760, maxHeight: '90vh', overflow: 'auto', animation: 'scaleIn 0.25s ease' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: 'var(--surface)', borderRadius: '16px 16px 0 0', borderBottom: '1px solid var(--border)' }}>
+              <span style={{ fontWeight: 700 }}>Invoice Preview — {viewInv.id}</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-primary btn-sm" onClick={() => { setEditInvoice(viewInv); setPage('createInvoice'); setViewInv(null); }}>✏️ Edit</button>
+                <button className="btn-icon" onClick={() => setViewInv(null)}>✕</button>
+              </div>
+            </div>
+            <InvoicePreview form={viewInv} logoPreview={viewInv.logo} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Clients ──────────────────────────────────────────────────────────────────
+function Clients({ clients, setClients, invoices, searchTerm }) {
+  const [modal, setModal] = useState(false);
+  const [editC, setEditC] = useState(null);
+  const blank = { id: '', name: '', email: '', phone: '', city: 'Karachi', address: '', ntn: '' };
+  const [form, setForm] = useState(blank);
+
+  const open = (c) => { setEditC(c); setForm(c ? { ...c } : { ...blank, id: `c${Date.now()}` }); setModal(true); };
+  const save = () => {
+    if (!form.name) return toast('Client name required', 'error');
+    if (editC) setClients(cs => cs.map(c => c.id === form.id ? form : c));
+    else setClients(cs => [form, ...cs]);
+    setModal(false); toast(editC ? 'Client updated!' : 'Client added!', 'success');
+  };
+  const del = (id) => { setClients(cs => cs.filter(c => c.id !== id)); toast('Client removed', 'info'); };
+
+  const filtered = clients.filter(c => !searchTerm || `${c.name} ${c.email} ${c.city}`.toLowerCase().includes(searchTerm.toLowerCase()));
+  const getInvCount = (cid) => invoices.filter(i => i.clientId === cid).length;
+  const getTotal = (cid) => invoices.filter(i => i.clientId === cid).reduce((s, i) => s + calcTotals(i.items).grand, 0);
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div><div className="page-title">Clients</div><div className="page-sub">{clients.length} clients</div></div>
+        <button className="btn btn-primary" onClick={() => open(null)}>+ Add Client</button>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">👥</div>
+          <div className="empty-title">No clients yet</div>
+          <button className="btn btn-primary" onClick={() => open(null)}>+ Add Client</button>
+        </div>
+      ) : (
+        <div className="grid-3">
+          {filtered.map(c => (
+            <div key={c.id} className="client-card" style={{ animation: 'scaleIn 0.3s ease' }}>
+              <div className="client-avatar">{c.name[0]}</div>
+              <div className="client-name">{c.name}</div>
+              <div className="client-info">📧 {c.email || '—'}</div>
+              <div className="client-info">📱 {c.phone || '—'}</div>
+              <div className="client-info">📍 {c.city}, Pakistan</div>
+              {c.ntn && <div className="client-info">🏛️ NTN: {c.ntn}</div>}
+              <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{getInvCount(c.id)} invoices</div>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent)' }}>{fmtPKR(getTotal(c.id))}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button className="btn-icon" style={{ padding: '5px 8px', fontSize: '0.8rem' }} onClick={() => open(c)}>✏️</button>
+                  <button className="btn-icon" style={{ padding: '5px 8px', fontSize: '0.8rem' }} onClick={() => del(c.id)}>🗑️</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {modal && (
+        <div className="modal-overlay" onClick={() => setModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">{editC ? 'Edit Client' : 'Add New Client'}</span>
+              <button className="btn-icon" onClick={() => setModal(false)}>✕</button>
+            </div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">Full Name *</label><input className="form-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Ahmed Ali" /></div>
+              <div className="form-group"><label className="form-label">Email</label><input className="form-input" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} /></div>
+            </div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">Phone</label><input className="form-input" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="03001234567" /></div>
+              <div className="form-group"><label className="form-label">City</label>
+                <select className="form-input form-select" value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))}>
+                  {['Karachi','Lahore','Islamabad','Rawalpindi','Peshawar','Quetta','Multan','Faisalabad'].map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="form-group"><label className="form-label">Address</label><input className="form-input" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} /></div>
+            <div className="form-group"><label className="form-label">NTN Number</label><input className="form-input" value={form.ntn} onChange={e => setForm(f => ({ ...f, ntn: e.target.value }))} placeholder="1234567-8" /></div>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
+              <button className="btn btn-secondary" onClick={() => setModal(false)}>Cancel</button>
+              <button className="btn btn-primary" onClick={save}>💾 Save Client</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Settings ─────────────────────────────────────────────────────────────────
+function Settings({ theme, setTheme }) {
+  const [gst, setGst] = useState(17);
+  const [lang, setLang] = useState('en');
+  const [watermark, setWatermark] = useState(true);
+  const [currency, setCurrency] = useState('PKR');
+  const [autoNum, setAutoNum] = useState(true);
+
+  return (
+    <div className="page" style={{ maxWidth: 760 }}>
+      <div className="page-header">
+        <div><div className="page-title">Settings</div><div className="page-sub">Manage your app preferences</div></div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="settings-title">🎨 Appearance</div>
+        <div className="settings-row">
+          <div><div className="settings-label">Theme</div><div className="settings-sub">Choose your preferred look</div></div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[['dark', '🌙 Dark'], ['light', '☀️ Light'], ['pakistan', '🇵🇰 Pakistan']].map(([v, l]) => (
+              <button key={v} className={`btn btn-sm ${theme === v ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTheme(v)}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div className="settings-row">
+          <div><div className="settings-label">Language</div><div className="settings-sub">Interface language</div></div>
+          <select className="form-input form-select" style={{ width: 140 }} value={lang} onChange={e => setLang(e.target.value)}>
+            <option value="en">🇺🇸 English</option>
+            <option value="ur">🇵🇰 Urdu</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="settings-title">🧾 Invoice Defaults</div>
+        <div className="settings-row">
+          <div><div className="settings-label">Default GST Rate</div><div className="settings-sub">Applied to new invoice items</div></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="number" className="form-input" style={{ width: 80 }} value={gst} onChange={e => setGst(e.target.value)} min="0" max="100" />
+            <span style={{ color: 'var(--text2)', fontSize: '0.875rem' }}>%</span>
+          </div>
+        </div>
+        <div className="settings-row">
+          <div><div className="settings-label">Default Currency</div><div className="settings-sub">Currency for new invoices</div></div>
+          <select className="form-input form-select" style={{ width: 140 }} value={currency} onChange={e => setCurrency(e.target.value)}>
+            <option value="PKR">PKR (₨)</option>
+            <option value="USD">USD ($)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="AED">AED</option>
+          </select>
+        </div>
+        <div className="settings-row">
+          <div><div className="settings-label">Auto Invoice Numbering</div><div className="settings-sub">Automatically generate invoice numbers</div></div>
+          <div className={`toggle-switch ${autoNum ? 'on' : ''}`} onClick={() => setAutoNum(!autoNum)}></div>
+        </div>
+        <div className="settings-row">
+          <div><div className="settings-label">"Made in Pakistan" Watermark</div><div className="settings-sub">Show watermark on invoices by default</div></div>
+          <div className={`toggle-switch ${watermark ? 'on' : ''}`} onClick={() => setWatermark(!watermark)}></div>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="settings-title">📱 Notification Settings</div>
+        {[['Due date reminders', 'Get notified 3 days before due date', true], ['Payment confirmations', 'Notify when invoice is marked paid', true], ['Overdue alerts', 'Alert when invoice becomes overdue', false]].map(([l, s, def]) => {
+          const [on, setOn] = useState(def);
+          return (
+            <div key={l} className="settings-row">
+              <div><div className="settings-label">{l}</div><div className="settings-sub">{s}</div></div>
+              <div className={`toggle-switch ${on ? 'on' : ''}`} onClick={() => setOn(!on)}></div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="card">
+        <div className="settings-title">⚠️ Data Management</div>
+        <div className="settings-row">
+          <div><div className="settings-label">Export All Data</div><div className="settings-sub">Download all invoices as JSON</div></div>
+          <button className="btn btn-secondary btn-sm" onClick={() => toast('Data exported!', 'success')}>📥 Export</button>
+        </div>
+        <div className="settings-row">
+          <div><div className="settings-label">Clear All Data</div><div className="settings-sub" style={{ color: '#ef4444' }}>This action cannot be undone</div></div>
+          <button className="btn btn-danger btn-sm" onClick={() => toast('Data cleared (demo only)', 'error')}>🗑️ Clear</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Profile ──────────────────────────────────────────────────────────────────
+function Profile({ invoices }) {
+  const [form, setForm] = useState({
+    name: 'Ibrahim', email: 'ibrahim@quickinvoice.pk', phone: '03001234567',
+    city: 'Karachi', address: 'DHA Phase 6, Karachi', business: 'Quick Invoice Pakistan',
+    ntn: '1234567-8', bankName: 'HBL', accountTitle: 'Ibrahim Solutions',
+    accountNumber: '1234567890', iban: 'PK36SCBL0000001123456702',
+  });
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + calcTotals(i.items).grand, 0);
+
+  return (
+    <div className="page" style={{ maxWidth: 760 }}>
+      <div className="page-header">
+        <div className="page-title">My Profile</div>
+        <button className="btn btn-primary" onClick={() => toast('Profile saved!', 'success')}>💾 Save Changes</button>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20, padding: 0, overflow: 'hidden' }}>
+        <div className="profile-banner">
+          <div className="profile-avatar-wrap">
+            <div className="profile-avatar">IB</div>
+          </div>
+        </div>
+        <div style={{ padding: '52px 28px 24px' }}>
+          <div style={{ fontWeight: 800, fontSize: '1.2rem' }}>{form.name}</div>
+          <div style={{ color: 'var(--text2)', fontSize: '0.875rem' }}>{form.email} • {form.city}, Pakistan</div>
+          <div style={{ display: 'flex', gap: 24, marginTop: 16 }}>
+            {[['Total Invoices', invoices.length, '#3b82f6'], ['Revenue', fmtPKR(totalRevenue), '#10b981'], ['Paid', invoices.filter(i => i.status === 'paid').length, '#10b981'], ['Pending', invoices.filter(i => i.status === 'pending').length, '#f59e0b']].map(([l, v, c]) => (
+              <div key={l}>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: c }}>{v}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="settings-title">👤 Personal Information</div>
+        <div className="form-row">
+          <div className="form-group"><label className="form-label">Full Name</label><input className="form-input" value={form.name} onChange={e => set('name', e.target.value)} /></div>
+          <div className="form-group"><label className="form-label">Business Name</label><input className="form-input" value={form.business} onChange={e => set('business', e.target.value)} /></div>
+        </div>
+        <div className="form-row">
+          <div className="form-group"><label className="form-label">Email</label><input className="form-input" value={form.email} onChange={e => set('email', e.target.value)} /></div>
+          <div className="form-group"><label className="form-label">Phone (+92)</label><input className="form-input" value={form.phone} onChange={e => set('phone', e.target.value)} /></div>
+        </div>
+        <div className="form-row">
+          <div className="form-group"><label className="form-label">City</label>
+            <select className="form-input form-select" value={form.city} onChange={e => set('city', e.target.value)}>
+              {['Karachi','Lahore','Islamabad','Rawalpindi','Peshawar','Quetta','Multan','Faisalabad'].map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="form-group"><label className="form-label">NTN Number</label><input className="form-input" value={form.ntn} onChange={e => set('ntn', e.target.value)} /></div>
+        </div>
+        <div className="form-group"><label className="form-label">Address</label><input className="form-input" value={form.address} onChange={e => set('address', e.target.value)} /></div>
+      </div>
+
+      <div className="card">
+        <div className="settings-title">🏦 Banking Details</div>
+        <div className="form-row">
+          <div className="form-group"><label className="form-label">Bank Name</label>
+            <select className="form-input form-select" value={form.bankName} onChange={e => set('bankName', e.target.value)}>
+              {['HBL','UBL','MCB','NBP','Allied Bank','Bank Alfalah','Meezan Bank','Standard Chartered'].map(b => <option key={b}>{b}</option>)}
+            </select>
+          </div>
+          <div className="form-group"><label className="form-label">Account Title</label><input className="form-input" value={form.accountTitle} onChange={e => set('accountTitle', e.target.value)} /></div>
+        </div>
+        <div className="form-row">
+          <div className="form-group"><label className="form-label">Account Number</label><input className="form-input" value={form.accountNumber} onChange={e => set('accountNumber', e.target.value)} style={{ fontFamily: 'JetBrains Mono, monospace' }} /></div>
+          <div className="form-group"><label className="form-label">IBAN</label><input className="form-input" value={form.iban} onChange={e => set('iban', e.target.value)} style={{ fontFamily: 'JetBrains Mono, monospace' }} /></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Auth Pages ───────────────────────────────────────────────────────────────
+function AuthPage({ type, setAuth }) {
+  const [tab, setTab] = useState(type);
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+
+  const submit = () => {
+    if (!form.email || !form.password) return toast('Please fill all fields', 'error');
+    setLoading(true);
+    setTimeout(() => { setLoading(false); setAuth(true); toast('Welcome to Quick Invoice Pakistan! 🇵🇰', 'success'); }, 1200);
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      {/* Background decoration */}
+      <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)', borderRadius: '50%' }}></div>
+        <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)', borderRadius: '50%' }}></div>
+      </div>
+
+      <div style={{ width: '100%', maxWidth: 420, position: 'relative', animation: 'scaleIn 0.4s ease' }}>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ width: 60, height: 60, background: 'linear-gradient(135deg,#3b82f6,#6366f1)', borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '1.5rem', fontWeight: 900, color: 'white', animation: 'float 3s ease infinite' }}>QI</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>Quick Invoice Pakistan</div>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text3)', marginTop: 4 }}>Smart Billing Solution 🇵🇰</div>
+        </div>
+
+        <div className="card">
+          <div className="tabs" style={{ marginBottom: 24, width: '100%' }}>
+            <button className={`tab ${tab === 'login' ? 'active' : ''}`} style={{ flex: 1 }} onClick={() => setTab('login')}>Login</button>
+            <button className={`tab ${tab === 'signup' ? 'active' : ''}`} style={{ flex: 1 }} onClick={() => setTab('signup')}>Sign Up</button>
+          </div>
+
+          {tab === 'signup' && (
+            <div className="form-group">
+              <label className="form-label">Full Name</label>
+              <input className="form-input" placeholder="Ahmed Ali" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+          )}
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
+            <input className="form-input" placeholder="you@company.pk" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input className="form-input" placeholder="••••••••" type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
+          </div>
+
+          <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 8 }} onClick={submit} disabled={loading}>
+            {loading ? '⏳ Please wait...' : tab === 'login' ? '→ Login to Dashboard' : '→ Create Account'}
+          </button>
+
+          <div style={{ textAlign: 'center', marginTop: 16, fontSize: '0.8rem', color: 'var(--text3)' }}>
+            {tab === 'login' ? "Don't have an account? " : "Already have an account? "}
+            <span style={{ color: 'var(--accent)', cursor: 'pointer', fontWeight: 600 }} onClick={() => setTab(tab === 'login' ? 'signup' : 'login')}>
+              {tab === 'login' ? 'Sign Up' : 'Login'}
+            </span>
+          </div>
+
+          <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--border)', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.73rem', color: 'var(--text3)', marginBottom: 10 }}>Or continue as demo</div>
+            <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { toast('Demo mode activated!', 'info'); setTimeout(() => setAuth(true), 400); }}>
+              👁️ View Demo
+            </button>
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 20, fontSize: '0.72rem', color: 'var(--text3)' }}>
+          © 2026 Quick Invoice Pakistan — Made By Ibrahim
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main App ─────────────────────────────────────────────────────────────────
+function App() {
+  const [loading, setLoading] = useState(true);
+  const [auth, setAuth] = useState(storage.get('qip_auth', false));
+  const [theme, setTheme] = useState(storage.get('qip_theme', 'dark'));
+  const [page, setPage] = useState('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebar, setMobileSidebar] = useState(false);
+  const [invoices, setInvoices] = useState(storage.get('qip_invoices', seedInvoices));
+  const [clients, setClients] = useState(storage.get('qip_clients', seedClients));
+  const [editInvoice, setEditInvoice] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => { setTimeout(() => setLoading(false), 2200); }, []);
+  useEffect(() => { storage.set('qip_theme', theme); }, [theme]);
+  useEffect(() => { storage.set('qip_auth', auth); }, [auth]);
+  useEffect(() => { storage.set('qip_invoices', invoices); }, [invoices]);
+  useEffect(() => { storage.set('qip_clients', clients); }, [clients]);
+
+  const themeClass = theme === 'light' ? 'light' : theme === 'pakistan' ? 'pakistan' : '';
+
+  // Apply theme classes to body
+  useEffect(() => {
+    document.body.className = '';
+    if (theme === 'light') document.body.classList.add('light');
+    else if (theme === 'pakistan') { document.body.classList.add('pakistan'); }
+  }, [theme]);
+
+  const handleSetPage = (p) => {
+    if (p !== 'createInvoice') setEditInvoice(null);
+    setPage(p);
+  };
+
+  if (loading) return (
+    <div className={themeClass}>
+      <LoadingScreen done={false} />
+      <ToastContainer />
+    </div>
+  );
+
+  if (!auth) return (
+    <div className={themeClass}>
+      <AuthPage type="login" setAuth={setAuth} />
+      <ToastContainer />
+    </div>
+  );
+
+  const renderPage = () => {
+    switch (page) {
+      case 'dashboard': return <Dashboard invoices={invoices} setPage={handleSetPage} setEditInvoice={setEditInvoice} />;
+      case 'createInvoice': return <CreateInvoice invoices={invoices} setInvoices={setInvoices} clients={clients} editInvoice={editInvoice} setEditInvoice={setEditInvoice} setPage={handleSetPage} />;
+      case 'history': return <InvoiceHistory invoices={invoices} setInvoices={setInvoices} setPage={handleSetPage} setEditInvoice={setEditInvoice} searchTerm={searchTerm} />;
+      case 'clients': return <Clients clients={clients} setClients={setClients} invoices={invoices} searchTerm={searchTerm} />;
+      case 'settings': return <Settings theme={theme} setTheme={setTheme} />;
+      case 'profile': return <Profile invoices={invoices} />;
+      default: return <Dashboard invoices={invoices} setPage={handleSetPage} setEditInvoice={setEditInvoice} />;
+    }
+  };
+
+  return (
+    <div className={themeClass} style={{ height: '100%' }}>
+      <div className="app-layout">
+        <Sidebar page={page} setPage={handleSetPage} collapsed={sidebarCollapsed} mobileOpen={mobileSidebar} onClose={() => setMobileSidebar(false)} />
+        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <Topbar theme={theme} setTheme={setTheme} page={page} onMenuClick={() => setMobileSidebar(true)} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {renderPage()}
+          </div>
+        </div>
+      </div>
+
+      {/* FAB mobile */}
+      <button className="btn btn-primary fab" onClick={() => handleSetPage('createInvoice')} style={{ boxShadow: '0 8px 24px rgba(59,130,246,0.4)' }}>
+        ✚ New Invoice
+      </button>
+
+      <ToastContainer />
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
+</script>
+</body>
+</html>
